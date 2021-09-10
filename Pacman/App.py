@@ -16,7 +16,6 @@ class App:
         self.__mazeHeight = MAZE_HEIGHT
         self.__fps = FPS
         self.__running = True
-        self.__currentscore = 0
         self.__highscore = 0
         self.__screen = pygame.display.set_mode((self.__width, self.__height))
         self.__clock = pygame.time.Clock()
@@ -123,10 +122,20 @@ class App:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.__running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    self.__player.movePlayer(pygame.math.Vector2(-1, 0))
+                elif event.key == pygame.K_RIGHT:
+                    self.__player.movePlayer(pygame.math.Vector2(1, 0))
+                elif event.key == pygame.K_UP:
+                    self.__player.movePlayer(pygame.math.Vector2(0, -1))
+                elif event.key == pygame.K_DOWN:
+                    self.__player.movePlayer(pygame.math.Vector2(0, 1))
+
     
 
     def playing_update(self) -> None:
-        pass
+        self.__player.update(self.__screen)
 
 
     def playing_draw(self) -> None:
@@ -134,6 +143,6 @@ class App:
         self.__screen.blit(self.__background, (SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER))
         self.draw_grid()
         self.draw_text(f"HIGH SCORE: {self.__highscore}", self.__screen, f'left top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
-        self.draw_text(f"CURRENT SCORE: {self.__currentscore}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
+        self.draw_text(f"CURRENT SCORE: {self.__player.getScore()}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.__player.drawPlayer(self.__screen)
         pygame.display.update()
