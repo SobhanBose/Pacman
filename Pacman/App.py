@@ -1,5 +1,6 @@
 import pygame
 import sys
+import numpy as np
 from .Player import Player
 from .configs import *
 
@@ -10,6 +11,7 @@ vec = pygame.math.Vector2()
 class App:
     def __init__(self) -> None:
         self.__player = Player()
+        self.__walls = []
         self.__width = SCREEN_WIDTH
         self.__height = SCREEN_HEIGHT
         self.__mazeWidth = MAZE_WIDTH
@@ -44,6 +46,16 @@ class App:
     def load(self) -> None:
         self.__background = pygame.image.load(r'Pacman\res\images\maze.png')
         self.__background = pygame.transform.scale(self.__background, (self.__mazeWidth, self.__mazeHeight))
+
+        with open(r'Pacman\walls.txt') as wall_file:
+            for y_index, line in enumerate(wall_file):
+                for x_index, character in enumerate(line):
+                    if character == "1":
+                        self.__walls.append(Vector2(x_index, y_index))
+        
+        # for wall in self.__walls:
+        #     pygame.draw.rect(self.__background, GREEN, (wall.x*CELL_WIDTH, wall.y*CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT))
+
 
 
     def draw_text(self, msg: str, screen: pygame.display, align: str, size: int, color: tuple, font_face: str) -> None:
@@ -135,13 +147,13 @@ class App:
     
 
     def playing_update(self) -> None:
-        self.__player.update(self.__screen)
+        self.__player.update(self.__screen, self.__walls)
 
 
     def playing_draw(self) -> None:
         self.__screen.fill(BLACK)
         self.__screen.blit(self.__background, (SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER))
-        self.draw_grid()
+        # self.draw_grid()
         self.draw_text(f"HIGH SCORE: {self.__highscore}", self.__screen, f'left top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.draw_text(f"CURRENT SCORE: {self.__player.getScore()}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.__player.drawPlayer(self.__screen)
