@@ -1,6 +1,6 @@
 import pygame
 import sys
-from .Pacman import Pacman
+from .Player import Player
 from .configs import *
 
 pygame.init()
@@ -9,6 +9,7 @@ vec = pygame.math.Vector2()
 
 class App:
     def __init__(self) -> None:
+        self.__player = Player()
         self.__width = SCREEN_WIDTH
         self.__height = SCREEN_HEIGHT
         self.__mazeWidth = MAZE_WIDTH
@@ -20,8 +21,8 @@ class App:
         self.__screen = pygame.display.set_mode((self.__width, self.__height))
         self.__clock = pygame.time.Clock()
         self.__gamestate = "intro_screen"
-        self.__cellWidth = self.__mazeWidth//28
-        self.__cellHeight = self.__mazeHeight//30
+        self.__cellWidth = CELL_WIDTH
+        self.__cellHeight = CELL_HEIGHT
         self.load()
     
     
@@ -42,7 +43,7 @@ class App:
 
 
     def load(self) -> None:
-        self.__background = pygame.image.load(r'Pacman_App\res\images\maze.png')
+        self.__background = pygame.image.load(r'Pacman\res\images\maze.png')
         self.__background = pygame.transform.scale(self.__background, (self.__mazeWidth, self.__mazeHeight))
 
 
@@ -134,4 +135,5 @@ class App:
         self.draw_grid()
         self.draw_text(f"HIGH SCORE: {self.__highscore}", self.__screen, f'left top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.draw_text(f"CURRENT SCORE: {self.__currentscore}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
+        self.__player.drawPlayer(self.__screen)
         pygame.display.update()
