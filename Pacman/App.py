@@ -172,6 +172,8 @@ class App:
 
     def playing_update(self) -> None:
         self.__player.update(self.__screen, self.__walls, self.__coins_dict)
+        for enemy in self.__enemies:
+            enemy.updateEnemy(self.__walls, self.__player.getGridPos())
 
 
     def playing_draw(self) -> None:
