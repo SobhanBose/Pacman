@@ -42,21 +42,21 @@ class Player:
         return False
     
 
-    def isOnCoin(self, coins: list) -> bool:
-        if self.__grid_pos in coins:
+    def isOnCoin(self, coins_dict: dict) -> bool:
+        if (self.__grid_pos.x, self.__grid_pos.y) in coins_dict.keys():
             return True
         return False
     
 
-    def eatCoin(self, grid_pos: Vector2, coins: list) -> None:
-        coins.remove(grid_pos)
+    def eatCoin(self, grid_pos: Vector2, coins_dict: dict) -> None:
+        del coins_dict[(grid_pos.x, grid_pos.y)]
 
 
     def scorePlayer(self) -> None:
         self.__score += 1
 
 
-    def update(self, screen: pygame.display, walls: list, coins: list) -> None:
+    def update(self, screen: pygame.display, walls: list, coins_dict: dict) -> None:
         if self.__is_able_to_move:
             self.__pix_pos += self.__direction * self.__speed
         if self.isTimeToMove():
@@ -64,8 +64,8 @@ class Player:
                 self.__direction = self.__temp_direction
             self.__is_able_to_move = self.canMove(walls)
         
-            if self.isOnCoin(coins):
-                self.eatCoin(self.__grid_pos, coins)
+            if self.isOnCoin(coins_dict):
+                self.eatCoin(self.__grid_pos, coins_dict)
                 self.scorePlayer()
 
         # self.__grid_pos[0] = (self.__pix_pos[0]-SCREEN_SIZE_BUFFER+CELL_WIDTH//2)//CELL_WIDTH-1

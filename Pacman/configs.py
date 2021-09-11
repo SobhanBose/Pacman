@@ -50,3 +50,4 @@ ENEMY_BEHAVIOUR = ['aggresive', 'passive']  #yet to code.....to control enemy be
 #Coin configs
 # COIN_COLOR = (124, 123, 7)
 COIN_COLOR = (255, 170, 164)
+COIN_RADIUS = 2

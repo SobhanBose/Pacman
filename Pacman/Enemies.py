@@ -15,6 +15,7 @@ class Enemy:
     def updateEnemyColor(self, behaviour: str) -> None:
         return Enemy.color_dict[behaviour]
 
+
     def updateEnemy(self) -> None:
         pass
 

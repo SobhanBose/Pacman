@@ -3,18 +3,17 @@ import sys
 import numpy as np
 from .Player import Player
 from .Enemies import Enemy
+from .Coins import Coin
 from .configs import *
 
 pygame.init()
-
-vec = pygame.math.Vector2()
 
 class App:
     def __init__(self) -> None:
         self.__player = Player()
         self.__enemies = []
         self.__walls = []
-        self.__coins = []
+        self.__coins_dict = {}
         self.__width = SCREEN_WIDTH
         self.__height = SCREEN_HEIGHT
         self.__mazeWidth = MAZE_WIDTH
@@ -61,7 +60,7 @@ class App:
                     if character == '1':
                         self.__walls.append(Vector2(x_index, y_index))
                     elif character == 'C':
-                        self.__coins.append(Vector2(x_index, y_index))
+                        self.__coins_dict[(x_index, y_index)] = Coin(Vector2(x_index, y_index))
                     elif character in ['2', '3', '4', '5']:
                         self.__enemies.append(self.makeEnemy(Vector2(x_index, y_index), character))
                     elif character == 'B':
@@ -114,8 +113,8 @@ class App:
 
 
     def draw_coins(self) -> None:
-        for coin in self.__coins:
-            pygame.draw.circle(self.__screen, COIN_COLOR, (coin.x*self.__cellWidth+self.__cellWidth//2+SCREEN_SIZE_BUFFER, coin.y*self.__cellHeight+self.__cellHeight//2+SCREEN_SIZE_BUFFER), 2)
+        for coin in self.__coins_dict.values():
+            coin.drawCoin(self.__screen)
 
 
     def run(self) -> None:
@@ -172,7 +171,7 @@ class App:
     
 
     def playing_update(self) -> None:
-        self.__player.update(self.__screen, self.__walls, self.__coins)
+        self.__player.update(self.__screen, self.__walls, self.__coins_dict)
 
 
     def playing_draw(self) -> None:
