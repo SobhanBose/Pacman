@@ -8,7 +8,7 @@ class Player:
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
         self.__direction = Vector2(1, 0)
         self.__temp_direction = None
-        self.__able_to_move = True
+        self.__is_able_to_move = True
         self.__score = 0
 
     
@@ -30,7 +30,7 @@ class Player:
         return True
     
 
-    def time_to_move(self):
+    def isTimeToMove(self):
         if int(self.__pix_pos.x) % CELL_WIDTH == 0:
             if self.__direction == Vector2(1, 0) or self.__direction == Vector2(-1, 0) or self.__direction == Vector2(0, 0):
                 return True
@@ -38,15 +38,33 @@ class Player:
             if self.__direction == Vector2(0, 1) or self.__direction == Vector2(0, -1) or self.__direction == Vector2(0, 0):
                 return True
         return False
+    
+
+    def isOnCoin(self, coins: list) -> bool:
+        if self.__grid_pos in coins:
+            return True
+        return False
+    
+
+    def eatCoin(self, grid_pos: Vector2, coins: list) -> None:
+        coins.remove(grid_pos)
 
 
-    def update(self, screen: pygame.display, walls: list) -> None:
-        if self.__able_to_move:
+    def scorePlayer(self) -> None:
+        self.__score += 1
+
+
+    def update(self, screen: pygame.display, walls: list, coins: list) -> None:
+        if self.__is_able_to_move:
             self.__pix_pos += self.__direction
-        if self.time_to_move():
+        if self.isTimeToMove():
             if self.__temp_direction != None:
                 self.__direction = self.__temp_direction
-            self.__able_to_move = self.canMove(walls)
+            self.__is_able_to_move = self.canMove(walls)
+        
+        if self.isOnCoin(coins):
+            self.eatCoin(self.__grid_pos, coins)
+            self.scorePlayer()
 
         # self.__grid_pos[0] = (self.__pix_pos[0]-SCREEN_SIZE_BUFFER+CELL_WIDTH//2)//CELL_WIDTH-1
         # self.__grid_pos[1] = (self.__pix_pos[1]-SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)//CELL_HEIGHT-1

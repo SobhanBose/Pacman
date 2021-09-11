@@ -36,3 +36,6 @@ PLAYER_START_POS = Vector2(1, 1)
 PLAYER_COLOR = (190, 194, 15)
 
 #Mob configs
+
+#Coin configs
+COIN_COLOR = (124, 123, 7)

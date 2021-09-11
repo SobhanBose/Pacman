@@ -12,6 +12,7 @@ class App:
     def __init__(self) -> None:
         self.__player = Player()
         self.__walls = []
+        self.__coins = []
         self.__width = SCREEN_WIDTH
         self.__height = SCREEN_HEIGHT
         self.__mazeWidth = MAZE_WIDTH
@@ -50,11 +51,16 @@ class App:
         with open(r'Pacman\walls.txt') as wall_file:
             for y_index, line in enumerate(wall_file):
                 for x_index, character in enumerate(line):
-                    if character == "1":
+                    if character == '1':
                         self.__walls.append(Vector2(x_index, y_index))
+                    elif character == 'C':
+                        self.__coins.append(Vector2(x_index, y_index))
         
         # for wall in self.__walls:
         #     pygame.draw.rect(self.__background, GREEN, (wall.x*CELL_WIDTH, wall.y*CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT))
+
+        # for coin in self.__coins:
+        #     pygame.draw.rect(self.__background, COIN_COLOR, (coin.x*self.__cellWidth, coin.y*self.__cellHeight, self.__cellWidth, self.__cellHeight))
 
 
 
@@ -91,6 +97,11 @@ class App:
             pygame.draw.line(self.__screen, GRAY, (cols*self.__cellWidth+SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER), (cols*self.__cellWidth+SCREEN_SIZE_BUFFER, self.__mazeHeight+SCREEN_SIZE_BUFFER))
         for rows in range(self.__mazeHeight//self.__cellHeight):
             pygame.draw.line(self.__screen, GRAY, (SCREEN_SIZE_BUFFER, rows*self.__cellHeight+SCREEN_SIZE_BUFFER), (self.__mazeWidth+SCREEN_SIZE_BUFFER, rows*self.__cellHeight+SCREEN_SIZE_BUFFER))
+
+
+    def draw_coins(self) -> None:
+        for coin in self.__coins:
+            pygame.draw.circle(self.__screen, COIN_COLOR, (coin.x*self.__cellWidth+self.__cellWidth//2+SCREEN_SIZE_BUFFER, coin.y*self.__cellHeight+self.__cellHeight//2+SCREEN_SIZE_BUFFER), 5)
 
 
     def run(self) -> None:
@@ -147,13 +158,14 @@ class App:
     
 
     def playing_update(self) -> None:
-        self.__player.update(self.__screen, self.__walls)
+        self.__player.update(self.__screen, self.__walls, self.__coins)
 
 
     def playing_draw(self) -> None:
         self.__screen.fill(BLACK)
         self.__screen.blit(self.__background, (SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER))
         # self.draw_grid()
+        self.draw_coins()
         self.draw_text(f"HIGH SCORE: {self.__highscore}", self.__screen, f'left top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.draw_text(f"CURRENT SCORE: {self.__player.getScore()}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.__player.drawPlayer(self.__screen)
