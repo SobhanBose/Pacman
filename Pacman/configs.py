@@ -3,8 +3,10 @@ from pygame.math import Vector2
 #Screen configs
 MAZE_WIDTH = 560
 MAZE_HEIGHT = 620
-CELL_WIDTH = MAZE_WIDTH//28
-CELL_HEIGHT = MAZE_HEIGHT//30
+NUM_COLUMNS = 28
+NUM_ROWS = 30
+CELL_WIDTH = MAZE_WIDTH//NUM_COLUMNS
+CELL_HEIGHT = MAZE_HEIGHT//NUM_ROWS
 SCREEN_SIZE_BUFFER = 50
 SCREEN_WIDTH = MAZE_WIDTH + 2*SCREEN_SIZE_BUFFER
 SCREEN_HEIGHT = MAZE_HEIGHT + 2*SCREEN_SIZE_BUFFER
@@ -34,10 +36,9 @@ TEXT_GAME_TITLE = "PACMAN"
 
 #Player configs
 PLAYER_START_POS = Vector2(1, 1)
-# PLAYER_COLOR = (190, 194, 15)
 PLAYER_COLOR = (255, 251, 0)
 PLAYER_RADIUS = CELL_WIDTH//2-2
-PLAYER_SPEED = 1
+PLAYER_SPEED = 2
 
 #Mob configs
 ENEMY_RADIUS = CELL_HEIGHT//2.3
@@ -48,6 +49,5 @@ ENEMY_COLOR_RED = (255, 49, 0)
 ENEMY_BEHAVIOUR = ['aggresive', 'passive']  #yet to code.....to control enemy behaviour.....can also be done by boolean in enemy class.....bool -> is_aggresive
 
 #Coin configs
-# COIN_COLOR = (124, 123, 7)
 COIN_COLOR = (255, 170, 164)
 COIN_RADIUS = 2

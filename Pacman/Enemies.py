@@ -14,8 +14,42 @@ class Enemy:
         self.__grid_pos = pos
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
         self.__direction = Vector2(0, 0)
+        self.__speed = self.setSpeed()
+        self.__target = None
 
         # type might be written as id later
+
+
+    def setTarget(self, player_grid_pos: Vector2) -> Vector2:
+        if self.__personality == "speedy" or self.__personality == "slow":
+            return player_grid_pos
+        elif self.__personality == "scared":
+            if player_grid_pos.x > NUM_COLUMNS//2:
+                if player_grid_pos.y > NUM_ROWS//2:
+                    return Vector2(1, 1)
+                else:
+                    return Vector2(1, NUM_ROWS-2)
+            else:
+                if player_grid_pos.y > NUM_ROWS//2:
+                    return Vector2(NUM_COLUMNS-2, 1)
+                else:
+                    return Vector2(NUM_COLUMNS-2, NUM_ROWS-2)
+        else:
+            pass
+    
+
+    def setSpeed(self) -> int:
+        if self.__personality in ["speedy", "scared"]:
+            return 2
+        return 1
+    
+
+    def updateEnemyColor(self, type: str) -> tuple:
+        return Enemy.color_dict[type]
+    
+
+    def updateEnemyPersonality(self, type: str) -> str:
+        return Enemy.personality_dict[type]
 
 
     def isTimeToMove(self):
@@ -26,25 +60,17 @@ class Enemy:
             if self.__direction == Vector2(0, 1) or self.__direction == Vector2(0, -1) or self.__direction == Vector2(0, 0):
                 return True
         return False
-
-
-    def updateEnemyColor(self, type: str) -> tuple:
-        return Enemy.color_dict[type]
-    
-
-    def updateEnemyPersonality(self, type: str) -> str:
-        return Enemy.personality_dict[type]
     
 
     def move(self, walls: list, player_grid_pos: Vector2) -> None:
         if self.__personality == "random":
             self.__direction = self.getRandomDirection(walls)
         elif self.__personality == "speedy":
-            self.__direction = self.getNextPathDirection(walls, player_grid_pos)
+            self.__direction = self.getNextPathDirection(walls, player_grid_pos, self.__target)
         elif self.__personality == "slow":
-            self.__direction = self.getNextPathDirection(walls, player_grid_pos)
+            self.__direction = self.getNextPathDirection(walls, player_grid_pos, self.__target)
         elif self.__personality == "scared":
-            self.__direction = self.getNextPathDirection(walls, player_grid_pos)
+            self.__direction = self.getNextPathDirection(walls, player_grid_pos, self.__target)
     
 
     def getRandomDirection(self, walls: list) -> Vector2:
@@ -63,15 +89,15 @@ class Enemy:
         return Vector2(x_dir, y_dir)
     
 
-    def getNextPathDirection(self, walls: int, player_grid_pos: Vector2) -> Vector2:
-        next_cell = self.findNextCellInPath(walls, player_grid_pos)
+    def getNextPathDirection(self, walls: int, player_grid_pos: Vector2, target: Vector2) -> Vector2:
+        next_cell = self.findNextCellInPath(walls, player_grid_pos, target)
         x_dir = next_cell[0] - self.__grid_pos[0]
         y_dir = next_cell[1] - self.__grid_pos[1]
         return Vector2(x_dir, y_dir)
     
 
-    def findNextCellInPath(self, walls: list, player_grid_pos: Vector2) -> Vector2:
-        path = self.BFS([int(self.__grid_pos.x), int(self.__grid_pos.y)], [int(player_grid_pos.x), int(player_grid_pos.y)], walls)
+    def findNextCellInPath(self, walls: list, player_grid_pos: Vector2, target: Vector2) -> Vector2:
+        path = self.BFS([int(self.__grid_pos.x), int(self.__grid_pos.y)], [int(target.x), int(target.y)], walls)
         return path[1]
     
 
@@ -108,9 +134,11 @@ class Enemy:
 
 
     def updateEnemy(self, walls: list, player_grid_pos: Vector2) -> None:
-        self.__pix_pos += self.__direction
-        if self.isTimeToMove():
-            self.move(walls, player_grid_pos)
+        self.__target = self.setTarget(player_grid_pos)
+        if self.__target != self.__grid_pos:
+            self.__pix_pos += self.__direction * self.__speed
+            if self.isTimeToMove():
+                self.move(walls, player_grid_pos)
         self.__grid_pos[0] = (self.__pix_pos[0]-SCREEN_SIZE_BUFFER)//CELL_WIDTH
         self.__grid_pos[1] = (self.__pix_pos[1]-SCREEN_SIZE_BUFFER)//CELL_HEIGHT
 
