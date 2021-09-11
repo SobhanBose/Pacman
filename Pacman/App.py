@@ -25,6 +25,7 @@ class App:
         self.__gamestate = "intro_screen"
         self.__cellWidth = CELL_WIDTH
         self.__cellHeight = CELL_HEIGHT
+
         self.load()
     
     
@@ -48,14 +49,14 @@ class App:
         self.__background = pygame.image.load(r'Pacman\res\images\maze.png')
         self.__background = pygame.transform.scale(self.__background, (self.__mazeWidth, self.__mazeHeight))
 
-        with open(r'Pacman\walls.txt') as wall_file:
+        with open(r'Pacman\map.txt') as wall_file:
             for y_index, line in enumerate(wall_file):
                 for x_index, character in enumerate(line):
                     if character == '1':
                         self.__walls.append(Vector2(x_index, y_index))
                     elif character == 'C':
                         self.__coins.append(Vector2(x_index, y_index))
-        
+
         # for wall in self.__walls:
         #     pygame.draw.rect(self.__background, GREEN, (wall.x*CELL_WIDTH, wall.y*CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT))
 

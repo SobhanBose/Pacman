@@ -62,9 +62,9 @@ class Player:
                 self.__direction = self.__temp_direction
             self.__is_able_to_move = self.canMove(walls)
         
-        if self.isOnCoin(coins):
-            self.eatCoin(self.__grid_pos, coins)
-            self.scorePlayer()
+            if self.isOnCoin(coins):
+                self.eatCoin(self.__grid_pos, coins)
+                self.scorePlayer()
 
         # self.__grid_pos[0] = (self.__pix_pos[0]-SCREEN_SIZE_BUFFER+CELL_WIDTH//2)//CELL_WIDTH-1
         # self.__grid_pos[1] = (self.__pix_pos[1]-SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)//CELL_HEIGHT-1
