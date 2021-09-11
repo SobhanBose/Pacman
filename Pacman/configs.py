@@ -30,12 +30,23 @@ FONT_COLOR_BLUE = (44, 167, 198)
 FONT_COLOR_WHITE = (255, 255, 255)
 
 #Text configs
+TEXT_GAME_TITLE = "PACMAN"
 
 #Player configs
 PLAYER_START_POS = Vector2(1, 1)
-PLAYER_COLOR = (190, 194, 15)
+# PLAYER_COLOR = (190, 194, 15)
+PLAYER_COLOR = (255, 251, 0)
+PLAYER_RADIUS = CELL_WIDTH//2-2
+PLAYER_SPEED = 1
 
 #Mob configs
+ENEMY_RADIUS = CELL_HEIGHT//2.3
+ENEMY_COLOR_BLUE = (0, 252, 255)
+ENEMY_COLOR_YELLOW = (255, 204, 0)
+ENEMY_COLOR_PINK = (227, 151, 210)
+ENEMY_COLOR_RED = (255, 49, 0)
+ENEMY_BEHAVIOUR = ['aggresive', 'passive']  #yet to code.....to control enemy behaviour.....can also be done by boolean in enemy class.....bool -> is_aggresive
 
 #Coin configs
-COIN_COLOR = (124, 123, 7)
+# COIN_COLOR = (124, 123, 7)
+COIN_COLOR = (255, 170, 164)

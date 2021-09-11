@@ -2,6 +2,7 @@ import pygame
 import sys
 import numpy as np
 from .Player import Player
+from .Enemies import Enemy
 from .configs import *
 
 pygame.init()
@@ -11,6 +12,7 @@ vec = pygame.math.Vector2()
 class App:
     def __init__(self) -> None:
         self.__player = Player()
+        self.__enemies = []
         self.__walls = []
         self.__coins = []
         self.__width = SCREEN_WIDTH
@@ -43,6 +45,10 @@ class App:
 
     def setGameState(self) -> str:
         return self.__gamestate
+    
+
+    def makeEnemy(self, pos: Vector2, behaviour: str) -> None:
+        return Enemy(pos, behaviour)
 
 
     def load(self) -> None:
@@ -56,13 +62,20 @@ class App:
                         self.__walls.append(Vector2(x_index, y_index))
                     elif character == 'C':
                         self.__coins.append(Vector2(x_index, y_index))
+                    elif character in ['2', '3', '4', '5']:
+                        self.__enemies.append(self.makeEnemy(Vector2(x_index, y_index), character))
+                    elif character == 'B':
+                        pygame.draw.rect(self.__background, BLACK, (x_index*self.__cellWidth, y_index*self.__cellHeight, self.__cellWidth, self.__cellHeight))
 
         # for wall in self.__walls:
         #     pygame.draw.rect(self.__background, GREEN, (wall.x*CELL_WIDTH, wall.y*CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT))
 
         # for coin in self.__coins:
         #     pygame.draw.rect(self.__background, COIN_COLOR, (coin.x*self.__cellWidth, coin.y*self.__cellHeight, self.__cellWidth, self.__cellHeight))
+    
 
+    def draw_background(self) -> None:
+        self.__screen.blit(self.__background, (SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER))
 
 
     def draw_text(self, msg: str, screen: pygame.display, align: str, size: int, color: tuple, font_face: str) -> None:
@@ -102,7 +115,7 @@ class App:
 
     def draw_coins(self) -> None:
         for coin in self.__coins:
-            pygame.draw.circle(self.__screen, COIN_COLOR, (coin.x*self.__cellWidth+self.__cellWidth//2+SCREEN_SIZE_BUFFER, coin.y*self.__cellHeight+self.__cellHeight//2+SCREEN_SIZE_BUFFER), 5)
+            pygame.draw.circle(self.__screen, COIN_COLOR, (coin.x*self.__cellWidth+self.__cellWidth//2+SCREEN_SIZE_BUFFER, coin.y*self.__cellHeight+self.__cellHeight//2+SCREEN_SIZE_BUFFER), 2)
 
 
     def run(self) -> None:
@@ -164,10 +177,12 @@ class App:
 
     def playing_draw(self) -> None:
         self.__screen.fill(BLACK)
-        self.__screen.blit(self.__background, (SCREEN_SIZE_BUFFER, SCREEN_SIZE_BUFFER))
+        self.draw_background()
         # self.draw_grid()
         self.draw_coins()
         self.draw_text(f"HIGH SCORE: {self.__highscore}", self.__screen, f'left top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.draw_text(f"CURRENT SCORE: {self.__player.getScore()}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.__player.drawPlayer(self.__screen)
+        for enemy in self.__enemies:
+            enemy.drawEnemy(self.__screen)
         pygame.display.update()

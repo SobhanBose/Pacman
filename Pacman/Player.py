@@ -1,9 +1,11 @@
-import pygame
+import pygame.display
 from pygame.math import Vector2
 from .configs import *
 
 class Player:
     def __init__(self) -> None:
+        self.__radius = PLAYER_RADIUS
+        self.__speed = PLAYER_SPEED
         self.__grid_pos = PLAYER_START_POS
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
         self.__direction = Vector2(1, 0)
@@ -56,7 +58,7 @@ class Player:
 
     def update(self, screen: pygame.display, walls: list, coins: list) -> None:
         if self.__is_able_to_move:
-            self.__pix_pos += self.__direction
+            self.__pix_pos += self.__direction * self.__speed
         if self.isTimeToMove():
             if self.__temp_direction != None:
                 self.__direction = self.__temp_direction
@@ -74,7 +76,7 @@ class Player:
 
 
     def drawPlayer(self, screen: pygame.display) -> None:
-        pygame.draw.circle(screen, PLAYER_COLOR, (self.__pix_pos.x, self.__pix_pos.y), CELL_WIDTH//2-2)
+        pygame.draw.circle(screen, PLAYER_COLOR, (self.__pix_pos.x, self.__pix_pos.y), self.__radius)
 
         # pygame.draw.rect(screen, RED, (self.__grid_pos[0]*CELL_WIDTH+SCREEN_SIZE_BUFFER, self.__grid_pos[1]*CELL_HEIGHT+SCREEN_SIZE_BUFFER, CELL_WIDTH, CELL_HEIGHT), 1)
     
