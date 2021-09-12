@@ -1,6 +1,7 @@
 from pygame.math import Vector2
 import pygame.display
 import random
+import copy
 from .configs import *
 
 class Enemy:
@@ -8,16 +9,27 @@ class Enemy:
     personality_dict = {'2': 'speedy', '3': 'slow', '4': 'random', '5': 'scared'}
     def __init__(self, pos: Vector2, type: str) -> None:
         self.__radius = ENEMY_RADIUS
-        self.__type = type
+        self.__type = copy.copy(type)
         self.__color = self.updateEnemyColor(self.__type)
         self.__personality = self.updateEnemyPersonality(self.__type)
-        self.__grid_pos = pos
+        self.__start_pos = copy.copy(pos)
+        self.__grid_pos = copy.copy(pos)
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
         self.__direction = Vector2(0, 0)
         self.__speed = self.setSpeed()
         self.__target = None
 
-        # type might be written as id later
+        # self.__type might be written as id later
+    
+
+    def getGridPos(self) -> Vector2:
+        return self.__grid_pos
+    
+
+    def resetEnemy(self) -> None:
+        self.__grid_pos = copy.copy(self.__start_pos)
+        self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
+        self.__direction = Vector2(0, 0)
 
 
     def setTarget(self, player_grid_pos: Vector2) -> Vector2:

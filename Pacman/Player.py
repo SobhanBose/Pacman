@@ -1,15 +1,17 @@
 import pygame.display
 from pygame.math import Vector2
+import copy
 from .configs import *
 
 class Player:
     def __init__(self) -> None:
         self.__radius = PLAYER_RADIUS
-        self.__speed = PLAYER_SPEED
-        self.__grid_pos = PLAYER_START_POS
+        self.__speed = copy.copy(PLAYER_SPEED)
+        self.__grid_pos = copy.copy(PLAYER_START_POS)
+        self.__lives_left = copy.copy(PLAYER_LIVES_LEFT)
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
-        self.__direction = Vector2(1, 0)
-        self.__temp_direction = None
+        self.__direction = Vector2(0, 0)
+        self.__temp_direction = Vector2(0, 0)
         self.__is_able_to_move = True
         self.__score = 0
 
@@ -24,6 +26,14 @@ class Player:
 
     def getScore(self) -> int:
         return self.__score
+    
+
+    def getLivesLeft(self) -> int:
+        return self.__lives_left
+    
+
+    def removeLife(self) -> None:
+        self.__lives_left -= 1
 
 
     def canMove(self, walls: list) -> bool:
@@ -32,7 +42,7 @@ class Player:
         return True
     
 
-    def isTimeToMove(self):
+    def isTimeToMove(self, walls: list) -> None:
         if int(self.__pix_pos.x) % CELL_WIDTH == 0:
             if self.__direction == Vector2(1, 0) or self.__direction == Vector2(-1, 0) or self.__direction == Vector2(0, 0):
                 return True
@@ -43,23 +53,30 @@ class Player:
     
 
     def isOnCoin(self, coins_dict: dict) -> bool:
-        if (self.__grid_pos.x, self.__grid_pos.y) in coins_dict.keys():
+        if (self.__grid_pos.x, self.__grid_pos.y) in coins_dict.keys() and not coins_dict[(self.__grid_pos.x, self.__grid_pos.y)].getHasBeenEaten():
             return True
         return False
     
 
     def eatCoin(self, grid_pos: Vector2, coins_dict: dict) -> None:
-        del coins_dict[(grid_pos.x, grid_pos.y)]
+        coins_dict[(grid_pos.x, grid_pos.y)].eatCoin()
 
 
     def scorePlayer(self) -> None:
         self.__score += 1
+    
+
+    def resetPlayer(self) -> None:
+        self.__grid_pos = copy.copy(PLAYER_START_POS)
+        self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
+        self.__direction = Vector2(0, 0)
+        self.__temp_direction = Vector2(0, 0)
 
 
     def update(self, screen: pygame.display, walls: list, coins_dict: dict) -> None:
         if self.__is_able_to_move:
             self.__pix_pos += self.__direction * self.__speed
-        if self.isTimeToMove():
+        if self.isTimeToMove(walls):
             if self.__temp_direction != None:
                 self.__direction = self.__temp_direction
             self.__is_able_to_move = self.canMove(walls)
@@ -81,5 +98,6 @@ class Player:
         # pygame.draw.rect(screen, RED, (self.__grid_pos[0]*CELL_WIDTH+SCREEN_SIZE_BUFFER, self.__grid_pos[1]*CELL_HEIGHT+SCREEN_SIZE_BUFFER, CELL_WIDTH, CELL_HEIGHT), 1)
     
 
-    def movePlayer(self, vec: Vector2) -> None:
+    def movePlayer(self, vec: Vector2, walls: list) -> None:
+        # if Vector2(self.__grid_pos + vec) not in walls:
         self.__temp_direction = vec
