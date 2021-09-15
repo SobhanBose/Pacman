@@ -48,8 +48,14 @@ ENEMY_COLOR_BLUE = (0, 252, 255)
 ENEMY_COLOR_YELLOW = (255, 204, 0)
 ENEMY_COLOR_PINK = (227, 151, 210)
 ENEMY_COLOR_RED = (255, 49, 0)
+ENEMY_SPEED = 2
 ENEMY_BEHAVIOUR = ['aggresive', 'passive']  #yet to code.....to control enemy behaviour.....can also be done by boolean in enemy class.....bool -> is_aggresive
 
 #Coin configs
 COIN_COLOR = (255, 170, 164)
 COIN_RADIUS = 2
+COIN_SPECIAL_POSITIONS = [(1, 4), (26, 4), (1, 28), (26, 28)]
+COIN_SPECIAL_RADIUS = 5
+
+#Miscl
+GHOST_HOUSE_ENTRY_POINTS = [(13, 12), (14, 12)]

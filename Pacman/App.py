@@ -3,6 +3,7 @@ import sys
 import pickle
 from .Player import Player
 from .Enemies import Enemy
+from .Ghost import Ghost
 from .Coins import Coin
 from .configs import *
 
@@ -11,7 +12,7 @@ pygame.init()
 class App:
     def __init__(self) -> None:
         self.__player = Player()
-        self.__enemies = []
+        self.__enemies_dict = {}
         self.__walls = []
         self.__coins_dict = {}
         self.__width = SCREEN_WIDTH
@@ -58,8 +59,8 @@ class App:
             self.__highscore = score
     
 
-    def makeEnemy(self, pos: Vector2, behaviour: str) -> None:
-        return Enemy(pos, behaviour)
+    def makeEnemy(self, pos: Vector2, ghost_id: str) -> None:
+        return Ghost(pos, ghost_id)
 
 
     def load(self) -> None:
@@ -69,12 +70,15 @@ class App:
         with open(r'Pacman\map.txt') as wall_file:
             for y_index, line in enumerate(wall_file):
                 for x_index, character in enumerate(line):
-                    if character == '1':
+                    if character == 'W':
                         self.__walls.append(Vector2(x_index, y_index))
                     elif character == 'C':
-                        self.__coins_dict[(x_index, y_index)] = Coin(Vector2(x_index, y_index))
-                    elif character in ['2', '3', '4', '5']:
-                        self.__enemies.append(self.makeEnemy(Vector2(x_index, y_index), character))
+                        if (x_index, y_index) in COIN_SPECIAL_POSITIONS:
+                            self.__coins_dict[(x_index, y_index)] = Coin(Vector2(x_index, y_index), isSpecial=True)
+                        else:
+                            self.__coins_dict[(x_index, y_index)] = Coin(Vector2(x_index, y_index))
+                    elif character in ['1', '2', '3', '4']:
+                        self.__enemies_dict[character] = self.makeEnemy(Vector2(x_index, y_index), character)
                     elif character == 'B':
                         pygame.draw.rect(self.__background, BLACK, (x_index*self.__cellWidth, y_index*self.__cellHeight, self.__cellWidth, self.__cellHeight))
 
@@ -171,15 +175,18 @@ class App:
     
 
     def checkPlayerEnemyCollision(self) -> bool:
-        for enemy in self.__enemies:
-            if enemy.getGridPos() == self.__player.getGridPos():
-                return True
+        for enemy in self.__enemies_dict.values():
+            if enemy.getBehaviourState() != "eaten" and enemy.getGridPos() == self.__player.getGridPos():
+                if enemy.getBehaviourState() == "frightened":
+                    enemy.makeEaten()
+                else:
+                    return True
         return False
     
 
     def resetPositions(self) -> bool:
         self.__player.resetPlayer()
-        for enemy in self.__enemies:
+        for enemy in self.__enemies_dict:
             enemy.resetEnemy()
     
 
@@ -199,9 +206,9 @@ class App:
 
     
     def playingUpdate(self) -> None:
-        self.__player.update(self.__screen, self.__walls, self.__coins_dict)
-        for enemy in self.__enemies:
-            enemy.updateEnemy(self.__walls, self.__player.getGridPos())
+        self.__player.update(self.__screen, self.__walls, self.__coins_dict, self.__enemies_dict)
+        for enemy in self.__enemies_dict.values():
+            enemy.updateGhost(self.__player.getGridPos(), self.__player.getDirection(), self.__walls)
         
         if self.checkPlayerEnemyCollision():
             if self.__player.getLivesLeft() == 0:
@@ -221,14 +228,14 @@ class App:
         self.drawText(f"CURRENT SCORE: {self.__player.getScore()}", self.__screen, f'right top' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.drawText(f"LIVES LEFT: {self.__player.getLivesLeft()}", self.__screen, f'left bottom' , 16, FONT_COLOR_WHITE, FONT_FACE_INTRO)
         self.__player.drawPlayer(self.__screen)
-        for enemy in self.__enemies:
-            enemy.drawEnemy(self.__screen)
+        for enemy in self.__enemies_dict.values():
+            enemy.drawGhost(self.__screen)
         pygame.display.update()
     
 
     def resetGame(self) -> None:
         self.__player = Player()
-        for enemy in self.__enemies:
+        for enemy in self.__enemies_dict:
             enemy.resetEnemy()
         for coin in self.__coins_dict.values():
             coin.resetCoin()

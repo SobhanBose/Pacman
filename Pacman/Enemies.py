@@ -5,8 +5,8 @@ import copy
 from .configs import *
 
 class Enemy:
-    color_dict = {'2': ENEMY_COLOR_BLUE, '3': ENEMY_COLOR_PINK, '4': ENEMY_COLOR_YELLOW, '5': ENEMY_COLOR_RED}
-    personality_dict = {'2': 'speedy', '3': 'slow', '4': 'random', '5': 'scared'}
+    color_dict = {'1': ENEMY_COLOR_BLUE, '2': ENEMY_COLOR_PINK, '3': ENEMY_COLOR_YELLOW, '4': ENEMY_COLOR_RED}
+    personality_dict = {'1': 'speedy', '2': 'slow', '3': 'random', '4': 'scared'}
     def __init__(self, pos: Vector2, type: str) -> None:
         self.__radius = ENEMY_RADIUS
         self.__type = copy.copy(type)
@@ -64,7 +64,7 @@ class Enemy:
         return Enemy.personality_dict[type]
 
 
-    def isTimeToMove(self):
+    def isTimeToMove(self) -> bool:
         if int(self.__pix_pos.x) % CELL_WIDTH == 0:
             if self.__direction == Vector2(1, 0) or self.__direction == Vector2(-1, 0) or self.__direction == Vector2(0, 0):
                 return True

@@ -10,8 +10,8 @@ class Player:
         self.__grid_pos = copy.copy(PLAYER_START_POS)
         self.__lives_left = copy.copy(PLAYER_LIVES_LEFT)
         self.__pix_pos = Vector2(self.__grid_pos.x*CELL_WIDTH+SCREEN_SIZE_BUFFER+CELL_WIDTH//2, self.__grid_pos.y*CELL_HEIGHT+SCREEN_SIZE_BUFFER+CELL_HEIGHT//2)
-        self.__direction = Vector2(0, 0)
-        self.__temp_direction = Vector2(0, 0)
+        self.__direction = Vector2(1, 0)
+        self.__temp_direction = Vector2(1, 0)
         self.__is_able_to_move = True
         self.__score = 0
 
@@ -30,6 +30,10 @@ class Player:
 
     def getLivesLeft(self) -> int:
         return self.__lives_left
+
+    
+    def getDirection(self) -> Vector2:
+        return self.__direction
     
 
     def removeLife(self) -> None:
@@ -58,7 +62,10 @@ class Player:
         return False
     
 
-    def eatCoin(self, grid_pos: Vector2, coins_dict: dict) -> None:
+    def eatCoin(self, grid_pos: Vector2, coins_dict: dict, enemies_dict: dict) -> None:
+        if coins_dict[(grid_pos.x, grid_pos.y)].isSpecial():
+            for enemy in enemies_dict.values():
+                enemy.makeFrightened()
         coins_dict[(grid_pos.x, grid_pos.y)].eatCoin()
 
 
@@ -73,7 +80,7 @@ class Player:
         self.__temp_direction = Vector2(0, 0)
 
 
-    def update(self, screen: pygame.display, walls: list, coins_dict: dict) -> None:
+    def update(self, screen: pygame.display, walls: list, coins_dict: dict, enemies_dict: dict) -> None:
         if self.__is_able_to_move:
             self.__pix_pos += self.__direction * self.__speed
         if self.isTimeToMove(walls):
@@ -82,7 +89,7 @@ class Player:
             self.__is_able_to_move = self.canMove(walls)
         
             if self.isOnCoin(coins_dict):
-                self.eatCoin(self.__grid_pos, coins_dict)
+                self.eatCoin(self.__grid_pos, coins_dict, enemies_dict)
                 self.scorePlayer()
 
         # self.__grid_pos[0] = (self.__pix_pos[0]-SCREEN_SIZE_BUFFER+CELL_WIDTH//2)//CELL_WIDTH-1
