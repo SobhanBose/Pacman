@@ -1,6 +1,7 @@
 # Pacman_Python
 
-Ghost is the primary class for the enemies  Target System Fetches target  Move Generator gives best move
+Ghost is the primary class for the enemies
+<br>Target System Fetches target  Move Generator gives best move
 
 All classes are done
 
